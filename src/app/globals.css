@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-bricolage);
+
+  /* Base */
+  --color-ink: #070611;
+  --color-panel: #100e22;
+  --color-line: #262247;
+  --color-muted: #a3a3c8;
+
+  /* Vibrant palette: each section and card picks one of these */
+  --color-accent: #8b7fff; /* violet */
+  --color-pink: #ff5fa2;
+  --color-amber: #ffb547;
+  --color-teal: #34d3b5;
+  --color-sky: #4cc9f0;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background: var(--color-ink);
+  color: #ecebfa;
+}
+
+::selection {
+  background: rgb(255 95 162 / 0.35);
+}
+
+/* ---------- Colourful background ---------- */
+
+/* Big blurred colour blobs that drift slowly */
+.blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.5;
+  will-change: transform;
+}
+.blob-1 { animation: drift-1 22s ease-in-out infinite alternate; }
+.blob-2 { animation: drift-2 26s ease-in-out infinite alternate; }
+.blob-3 { animation: drift-3 30s ease-in-out infinite alternate; }
+@keyframes drift-1 { to { transform: translate(18%, 22%) scale(1.15); } }
+@keyframes drift-2 { to { transform: translate(-22%, 12%) scale(0.9); } }
+@keyframes drift-3 { to { transform: translate(10%, -18%) scale(1.2); } }
+
+/* Faint dotted grid */
+.dot-grid {
+  background-image: radial-gradient(rgb(255 255 255 / 0.09) 1px, transparent 1px);
+  background-size: 26px 26px;
+  mask-image: radial-gradient(ellipse at top, black 25%, transparent 72%);
+}
+
+/* Film grain keeps big gradients from banding */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- Text ---------- */
+
+.rainbow-text {
+  background: linear-gradient(100deg, #8b7fff, #ff5fa2, #ffb547, #34d3b5, #4cc9f0, #8b7fff);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: hue-slide 9s linear infinite;
+}
+@keyframes hue-slide { to { background-position: 300% 0; } }
+
+/* ---------- Cards ---------- */
+
+.card {
+  position: relative;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.015));
+  border: 1px solid var(--color-line);
+  border-radius: 1.5rem;
+  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+/* Each card sets --glow to its own colour */
+.card-hover:hover {
+  border-color: color-mix(in srgb, var(--glow, #8b7fff) 55%, transparent);
+  transform: translateY(-4px);
+  box-shadow: 0 24px 60px -24px color-mix(in srgb, var(--glow, #8b7fff) 60%, transparent);
+}
+
+/* Animated rainbow border (used on the hero stats card and contact) */
+.rainbow-border {
+  position: relative;
+  border-radius: 1.75rem;
+  padding: 1px;
+  background: conic-gradient(from var(--angle), #8b7fff, #ff5fa2, #ffb547, #34d3b5, #4cc9f0, #8b7fff);
+  animation: spin-border 8s linear infinite;
+}
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes spin-border { to { --angle: 360deg; } }
+
+/* ---------- Motion ---------- */
+
+/* Reveal on scroll: <Reveal> adds data-shown when the element enters the screen */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px) scale(0.98);
+  transition: opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--delay, 0ms);
+}
+.reveal[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Endless skills ribbon */
+.marquee {
+  mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 45s linear infinite;
+}
+.marquee-track.reverse { animation-direction: reverse; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* Rotating word in the hero */
+.word-in {
+  display: inline-block;
+  animation: word-in 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes word-in {
+  from { opacity: 0; transform: translateY(0.4em); filter: blur(6px); }
+}
+
+.float { animation: float 6s ease-in-out infinite; }
+@keyframes float { 50% { transform: translateY(-10px); } }
+
+/* Slide progress bar */
+.progress-fill { animation: progress linear forwards; transform-origin: left; }
+@keyframes progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
